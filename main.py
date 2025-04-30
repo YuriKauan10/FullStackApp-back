@@ -4,36 +4,47 @@ from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Permitir requisições do frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Em produção, defina seu domínio
+    allow_origins=["*"],  # Liberar frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-class NomeInput(BaseModel):
-    nome: str
+# Variáveis para armazenar dados
+dados_armazenados = {}
 
-@app.post("/alterar_nome")
-def alterar_nome(nome_input: NomeInput):
-    return {"mensagem": f"{nome_input.nome}"}
+# Modelo para os dados recebidos
+class Dados(BaseModel):
+    usuario: str
+    produto: str
+    mensagem: str
 
-@app.get("/")
-def home():
-    return {"mensagem": "Bem-vindo à API FastAPI"}
+@app.post("/enviar")
+def receber_dados(dados: Dados):
+    dados_armazenados['usuario'] = dados.usuario
+    dados_armazenados['produto'] = dados.produto
+    dados_armazenados['mensagem'] = dados.mensagem
+    return {
+        "usuario": "Dados recebidos com sucesso!",
+        "produto": "Dados recebidos com sucesso!",
+        "mensagem": "Dados recebidos com sucesso!"
+    }
 
+
+# Função GET para acessar o usuário
 @app.get("/usuario")
-def usuario():
-    return {"nome": "Maria", "idade": 25}
+def obter_usuario():
+    return {"usuario": dados_armazenados.get("usuario", "Não informado")}
 
+# Função GET para acessar o produto
 @app.get("/produto")
-def produto():
-    return {"produto": "Notebook", "preco": 3500}
+def obter_produto():
+    return {"produto": dados_armazenados.get("produto", "Não informado")}
 
+# Função GET para acessar a mensagem
 @app.get("/mensagem")
-def mensagem():
-    return {"mensagem": "Olá mundo!"}
-
+def obter_mensagem():
+    return {"mensagem": dados_armazenados.get("mensagem", "Não informada")}
 
