@@ -24,3 +24,8 @@ def usuario():
 def produto():
     return {"produto": "Notebook", "preco": 3500}
 
+@app.get("/mensagem")
+def mensagem():
+    return {"mensagem": "Olá mundo!"}
+
+
